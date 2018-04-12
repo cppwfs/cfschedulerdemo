@@ -2,9 +2,9 @@
 
 Allows a user to hit a couple of restful endpoints to verify the bits work as expected.
 
-To create a job `http://localhost:8080/scheduler/testCreate/{jobName}`
-To list jobs `http://localhost:8080/scheduler/testList`
-To get a job `http://localhost:8080/scheduler/testGet/{jobName}`
+* To create a job `http://localhost:8080/scheduler/testCreate/{jobName}`
+* To list jobs `http://localhost:8080/scheduler/testList`
+* To get a job `http://localhost:8080/scheduler/testGet/{jobName}`
 
 To build the Application
 
