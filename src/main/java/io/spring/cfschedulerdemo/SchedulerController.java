@@ -17,19 +17,19 @@
 package io.spring.cfschedulerdemo;
 
 import io.pivotal.reactor.scheduler.ReactorSchedulerClient;
+import io.pivotal.scheduler.v1.ExpressionType;
 import io.pivotal.scheduler.v1.jobs.CreateJobRequest;
 import io.pivotal.scheduler.v1.jobs.CreateJobResponse;
+import io.pivotal.scheduler.v1.jobs.DeleteJobRequest;
 import io.pivotal.scheduler.v1.jobs.GetJobRequest;
 import io.pivotal.scheduler.v1.jobs.GetJobResponse;
 import io.pivotal.scheduler.v1.jobs.ListJobsRequest;
 import io.pivotal.scheduler.v1.jobs.ListJobsResponse;
-import org.cloudfoundry.reactor.DefaultConnectionContext;
-import org.cloudfoundry.reactor.tokenprovider.PasswordGrantTokenProvider;
+import io.pivotal.scheduler.v1.jobs.ScheduleJobRequest;
+import io.pivotal.scheduler.v1.jobs.ScheduleJobResponse;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,12 +64,34 @@ public class SchedulerController {
 
 	@GetMapping(path = "testGet/{jobName}")
 	public Mono<GetJobResponse> getJob(@PathVariable("jobName") String jobName) {
-		System.out.println(jobName);
 		return client.jobs().
 				get(GetJobRequest.
 						builder().
 						jobId(jobName).
 						build()).
 				log();
+	}
+
+	@GetMapping(path = "testDelete/{jobName}")
+	public Mono<String> deleteJob(@PathVariable("jobName") String jobName) {
+		client.jobs().delete(DeleteJobRequest.
+				builder().
+				jobId(jobName).
+				build()).
+				log().
+				subscribe();
+		return Mono.just(String.format("Job %s Deleted", jobName));
+	}
+
+	@GetMapping(path = "testSchedule/{jobName}")
+	public Mono<ScheduleJobResponse> schedule(@PathVariable("jobName") String jobName) {
+		return client.jobs().schedule(ScheduleJobRequest.
+				builder().
+				jobId(jobName).
+				expression("*/2.*.*.*.*").
+				expressionType(ExpressionType.CRON).
+				enabled(true).
+				build())
+				.log();
 	}
 }
